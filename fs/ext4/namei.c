@@ -2102,7 +2102,7 @@ static int ext4_add_entry(handle_t *handle, struct dentry *dentry,
 	}
 
 	if (is_dx(dir)) {
-		retval = ext4_dx_add_entry(handle, &fname, dir, inode);
+		retval = ext4_dx_add_entry(handle, dentry, inode);
 		if (!retval || (retval != ERR_BAD_DX_DIR))
 			goto out;
 		ext4_clear_inode_flag(dir, EXT4_INODE_INDEX);
@@ -2112,31 +2112,24 @@ static int ext4_add_entry(handle_t *handle, struct dentry *dentry,
 	blocks = dir->i_size >> sb->s_blocksize_bits;
 	for (block = 0; block < blocks; block++) {
 		bh = ext4_read_dirblock(dir, block, DIRENT);
-		if (IS_ERR(bh)) {
-			retval = PTR_ERR(bh);
-			bh = NULL;
-			goto out;
-		}
-		retval = add_dirent_to_buf(handle, &fname, dir, inode,
-					   NULL, bh);
+		if (IS_ERR(bh))
+			return PTR_ERR(bh);
+
+		retval = add_dirent_to_buf(handle, dentry, inode, NULL, bh);
 		if (retval != -ENOSPC)
 			goto out;
 
 		if (blocks == 1 && !dx_fallback &&
 		    EXT4_HAS_COMPAT_FEATURE(sb, EXT4_FEATURE_COMPAT_DIR_INDEX)) {
-			retval = make_indexed_dir(handle, &fname, dir,
-						  inode, bh);
+			retval = make_indexed_dir(handle, dentry, inode, bh);
 			bh = NULL; /* make_indexed_dir releases bh */
 			goto out;
 		}
 		brelse(bh);
 	}
 	bh = ext4_append(handle, dir, &block);
-	if (IS_ERR(bh)) {
-		retval = PTR_ERR(bh);
-		bh = NULL;
-		goto out;
-	}
+	if (IS_ERR(bh))
+		return PTR_ERR(bh);
 	de = (struct ext4_dir_entry_2 *) bh->b_data;
 	de->inode = 0;
 	de->rec_len = ext4_rec_len_to_disk(blocksize - csum_size, blocksize);
@@ -2146,9 +2139,8 @@ static int ext4_add_entry(handle_t *handle, struct dentry *dentry,
 		initialize_dirent_tail(t, blocksize);
 	}
 
-	retval = add_dirent_to_buf(handle, &fname, dir, inode, de, bh);
+	retval = add_dirent_to_buf(handle, dentry, inode, de, bh);
 out:
-	ext4_fname_free_filename(&fname);
 	brelse(bh);
 	if (retval == 0)
 		ext4_set_inode_state(inode, EXT4_STATE_NEWENTRY);
