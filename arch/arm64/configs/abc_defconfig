@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------
 # ABCrom kernel config
 # ----------------------------------------------------------------------------------
-CONFIG_LOCALVERSION="-ABCKernel-Angler-5.0upstream"
+CONFIG_LOCALVERSION="-ABCKernel-Angler-5.0_upstream"
 # CONFIG_LOCALVERSION_AUTO is not set
 CONFIG_FB_MSM_MDSS_KCAL_CTRL=y
 CONFIG_SOUND_CONTROL_HAX_3_GPL=y
