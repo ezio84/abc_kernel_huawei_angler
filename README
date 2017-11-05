@@ -1,3 +1,8 @@
+This is an alternative aosp kernel, updated to latest upstream linux kernel v3.10.x
+thanks to our friend and master @nathanchance 
+See his upstream tutorial here:
+https://forum.xda-developers.com/android/software-hacking/reference-how-to-upstream-android-kernel-t3626913
+
         Linux kernel release 3.x <http://kernel.org/>
 
 These are the release notes for Linux version 3.  Read them carefully,
