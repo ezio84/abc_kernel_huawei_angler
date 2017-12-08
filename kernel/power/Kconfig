@@ -305,7 +305,3 @@ config PARTIALRESUME
 	  partial-resume handlers associated with them, and they all return
 	  true.
 
-config QUICK_THAW_FINGERPRINTD
-	bool "Quickly resume fingerprintd"
-	depends on SUSPEND
-	default y
